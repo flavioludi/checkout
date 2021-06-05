@@ -11,8 +11,13 @@ import InputText from '../../../components/inputs/InputText'
 import MaskInputText from '../../../components/inputs/MaskInputText'
 
 const CheckoutSection = ({
-  formik
+  formik,
+  checkCoupon
 }) => {
+  const handleCouponCodeBlur = () => {
+    checkCoupon(formik.values.offer);
+  }
+
   return (
     <Grid container>
       <Grid item xs={12}>
@@ -75,16 +80,20 @@ const CheckoutSection = ({
                 />
               </Grid>
             </Grid>
-            <Grid container spacing={8}>
-              <Grid item xs={12}>
-                <InputText
-                  formik={formik}
-                  name="couponCode"
-                  label="Cupom"
-                  placeholder="Insira aqui"
-                />
+            {formik.values.offer?.acceptsCoupon && (
+              <Grid container spacing={8}>
+                <Grid item xs={12}>
+                  <InputText
+                    formik={formik}
+                    onBlur={handleCouponCodeBlur}
+                    value={formik.values.couponCode.toUpperCase()}
+                    name="couponCode"
+                    label="Cupom"
+                    placeholder="Insira aqui"
+                  />
+                </Grid>
               </Grid>
-            </Grid>
+            )}
             {formik.values.offer?.splittable && (
               <Grid container spacing={8}>
                 <Grid item xs={12}>

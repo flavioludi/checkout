@@ -7,6 +7,9 @@ const InputText = ({
   id,
   type,
   placeholder,
+  onChange,
+  onBlur,
+  value,
 }) => {
   return (
     <TextField
@@ -19,8 +22,9 @@ const InputText = ({
       id={id || name}
       name={name}
       label={label}
-      value={formik.values[name]}
-      onChange={formik.handleChange}
+      value={value || formik.values[name]}
+      onChange={onChange || formik.handleChange}
+      onBlur={onBlur || formik.handleBlur}
       error={formik.touched[name] && Boolean(formik.errors[name])}
       helperText={formik.touched[name] && formik.errors[name]}
     />
