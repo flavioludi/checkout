@@ -1,3 +1,4 @@
+import { React } from 'react';
 import {
   Paper,
   FormControlLabel,
@@ -5,57 +6,58 @@ import {
 } from '@material-ui/core';
 
 import {
- Adjust,
- RadioButtonUnchecked
+  Adjust,
+  RadioButtonUnchecked,
 } from '@material-ui/icons';
+
+import { showCurrency } from '../../../utils/format';
 
 const CardOffer = ({
   formik,
   offer,
   checkOffer,
 }) => {
-  const discountPrice = offer.fullPrice - offer.discountAmmount;
-  const monthPrice = offer.splittable && offer.installments ? discountPrice/offer.installments : null;
+  const minimumMonthPrice = offer.splittable && offer.installments
+    ? offer.finalPrice / offer.installments
+    : null;
+  const currentMonthPrice = offer.splittable && formik.values.installments
+    ? offer.finalPrice / formik.values.installments
+    : null;
   return (
     <Paper
       onClick={() => checkOffer(offer)}
     >
-      <h5>{offer.title} | {offer.description}</h5>
+      <h5>
+        {offer.title}
+        {' '}
+        |
+        {' '}
+        {offer.description}
+      </h5>
       <div>
-        <p>{`De R$ ${offer.fullPrice} | Por R$ ${discountPrice}`}</p>
-        {offer.couponApplied && (
-          <span>{`-${offer.discountPercentage * 100}%`}</span>
+        {offer.couponApplied ? (
+          <>
+            <p>{`De ${showCurrency(offer.fullPrice)} | Por ${showCurrency(offer.finalPrice)}`}</p>
+            <span>{`-${offer.discountPercentage * 100}%`}</span>
+          </>
+        ) : (
+          <p>{showCurrency(offer.finalPrice)}</p>
         )}
       </div>
       {Boolean(offer.splittable) && (
         <div>
-          {`${offer.installments}x de R$ ${monthPrice}/mês`}
+          {formik.values.installments ? (
+            `${formik.values.installments}x de ${showCurrency(currentMonthPrice)}/mês`
+          ) : (
+            `Em até ${offer.installments}x de ${showCurrency(minimumMonthPrice)}/mês`
+          )}
         </div>
       )}
       <FormControlLabel
         control={<Checkbox icon={<RadioButtonUnchecked />} checkedIcon={<Adjust />} checked={offer.id === formik.values.offer.id} />}
       />
-      {/* acceptsCoupon: true
-      caption: "7 Dias Grátis"
-      description: "Parcelado"
-      discountAmmount: 60
-      discountCouponCode: null
-      discountPercentage: 0.1
-      fullPrice: 600
-      gateway: "iugu"
-      id: 32
-      installments: 12
-      order: 1
-      period: "annually"
-      periodLabel: "mês"
-      priority: 1
-      splittable: true
-      storeId: "anual_parcelado_iugu"
-      title: "Premium Anual" */}
-
-      
     </Paper>
-  )
+  );
 };
 
 export default CardOffer;

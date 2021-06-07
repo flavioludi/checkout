@@ -1,3 +1,4 @@
+import { React } from 'react';
 import {
   Grid,
   Button,
@@ -7,16 +8,16 @@ import {
   MenuItem,
 } from '@material-ui/core';
 
-import InputText from '../../../components/inputs/InputText'
-import MaskInputText from '../../../components/inputs/MaskInputText'
+import InputText from '../../inputs/InputText';
+import MaskInputText from '../../inputs/MaskInputText';
 
 const CheckoutSection = ({
   formik,
-  checkCoupon
+  checkCoupon,
 }) => {
   const handleCouponCodeBlur = () => {
     checkCoupon(formik.values.offer);
-  }
+  };
 
   return (
     <Grid container>
@@ -26,8 +27,9 @@ const CheckoutSection = ({
       <Grid item xs={12}>
         <form onSubmit={formik.handleSubmit}>
           <div style={{
-            flexGrow: 1
-          }}>
+            flexGrow: 1,
+          }}
+          >
             <Grid container spacing={8}>
               <Grid item xs={12}>
                 <MaskInputText
@@ -97,7 +99,7 @@ const CheckoutSection = ({
             {formik.values.offer?.splittable && (
               <Grid container spacing={8}>
                 <Grid item xs={12}>
-                  <FormControl style={{width: '100%'}}>
+                  <FormControl style={{ width: '100%' }}>
                     <InputLabel id="installments-label">Parcelas</InputLabel>
                     <Select
                       fullWidth
@@ -108,7 +110,7 @@ const CheckoutSection = ({
                       onChange={formik.handleChange}
                     >
                       {Array(formik.values.offer?.installments || 1).fill(null).map((v, i) => (
-                        <MenuItem key={i+1} value={i+1}>{i+1}</MenuItem>
+                        <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>
                       ))}
                     </Select>
                   </FormControl>
@@ -118,7 +120,7 @@ const CheckoutSection = ({
             <Grid container spacing={8}>
               <Grid item xs={12}>
                 <Button color="primary" variant="contained" fullWidth type="submit">
-                  Submit
+                  Finalizar pagamento
                 </Button>
               </Grid>
             </Grid>
@@ -126,7 +128,7 @@ const CheckoutSection = ({
         </form>
       </Grid>
     </Grid>
-  )
-}
+  );
+};
 
 export default CheckoutSection;

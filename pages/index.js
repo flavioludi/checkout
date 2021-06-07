@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { React, useState } from 'react';
+
 import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import {
   Container,
-  Grid
+  Grid,
 } from '@material-ui/core';
 
 import MainLayout from '../layouts/MainLayout';
@@ -13,46 +14,47 @@ import CheckoutSection from '../components/checkout/CheckoutSection';
 import OffersSection from '../components/checkout/OffersSection';
 
 const Home = ({
-  _offers
+  _offers,
 }) => {
   const router = useRouter();
-  const [offers, setOffers] = useState(_offers)
+  const [offers, setOffers] = useState(_offers);
 
   const checkCoupon = (_offer) => {
     let newOffers = [];
     if (formik.values.couponCode.toUpperCase() === '10OFF') {
-      newOffers = offers.map(offer => {
+      newOffers = offers.map((offer) => {
         if (offer.id === _offer.id) {
           return (
             {
               ...offer,
-              couponApplied: true
+              couponApplied: true,
+              finalPrice: offer.fullPrice - offer.discountAmmount,
             }
-          )
+          );
         }
         return (
           {
             ...offer,
-            couponApplied: false
+            couponApplied: false,
+            finalPrice: offer.fullPrice,
           }
-        )
-      })
-    }
-    else {
-      newOffers = offers.map(offer => (
+        );
+      });
+    } else {
+      newOffers = offers.map((offer) => (
         {
           ...offer,
-          couponApplied: false
+          couponApplied: false,
         }
-      ))
+      ));
     }
-    setOffers(newOffers)
-  }
+    setOffers(newOffers);
+  };
 
   const currentUser = {
     id: 1,
     email: 'fulano@cicrano.com.br',
-  }
+  };
 
   const initialValues = {
     offer: {},
@@ -92,32 +94,43 @@ const Home = ({
     //   .required('This field is required'),
   });
 
-  const mountPayload = (values) => {
-    return (
-      {
-        couponCode: values.couponCode,
-        creditCardCPF: values.creditCardCPF.replace(/\D/g, ''),
-        creditCardCVV: values.creditCardCVV.replace(/\D/g, ''),
-        creditCardExpirationDate: values.creditCardExpirationDate,
-        creditCardHolder: values.creditCardHolder,
-        creditCardNumber: values.creditCardNumber.replace(/\D/g, ''),
-        gateway: values.offer.gateway,
-        installments: parseInt(values.offer.installments),
-        offerId: parseInt(values.offer.id),
-        userId: currentUser.id,
-        // "id": 1
-      }
-    )
-  }
+  const mountPayload = (values) => (
+    {
+      couponCode: values.couponCode,
+      creditCardCPF: values.creditCardCPF.replace(/\D/g, ''),
+      creditCardCVV: values.creditCardCVV.replace(/\D/g, ''),
+      creditCardExpirationDate: values.creditCardExpirationDate,
+      creditCardHolder: values.creditCardHolder,
+      creditCardNumber: values.creditCardNumber.replace(/\D/g, ''),
+      gateway: values.offer.gateway,
+      installments: parseInt(values.offer.installments),
+      offerId: parseInt(values.offer.id),
+      userId: currentUser.id,
+      // "id": 1
+    }
+  );
 
   const onSubmit = async (values) => {
-    const payload = mountPayload(values)
+    const payload = mountPayload(values);
     const resp = await axios.post('https://private-0ced4-pebmeddesafiofrontend.apiary-mock.com/subscription', payload);
     if (resp.status === 200) {
-      router.push('/success')
+      router.push({
+        pathname: '/success',
+        query: {
+          data: JSON.stringify({
+            offerTitle: formik.values.offer.title,
+            offerDescription: formik.values.offer.description,
+            finalPrice: formik.values.offer.finalPrice,
+            installments: formik.values.installments,
+            monthPrice: formik.values.offer.monthPrice,
+            userCPF: formik.values.creditCardCPF,
+            userEmail: currentUser.email,
+          }),
+        },
+      });
     }
-  }
-  
+  };
+
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -145,21 +158,22 @@ const Home = ({
         </Grid>
       </Container>
     </MainLayout>
-  )
-}
+  );
+};
 
 export default Home;
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps() {
   const resp = await axios.get('https://private-0ced4-pebmeddesafiofrontend.apiary-mock.com/offer');
   return {
     props: {
-      _offers: resp.data.map(data => (
+      _offers: resp.data.map((offer) => (
         {
-          ...data,
+          ...offer,
           couponApplied: false,
+          finalPrice: offer.fullPrice,
         }
-      ))
-    }
-  }
+      )),
+    },
+  };
 }
