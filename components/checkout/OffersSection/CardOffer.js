@@ -1,8 +1,8 @@
-import { React } from 'react';
+import styled from 'styled-components';
 import {
-  Paper,
   FormControlLabel,
   Checkbox,
+  Grid,
 } from '@material-ui/core';
 
 import {
@@ -11,6 +11,34 @@ import {
 } from '@material-ui/icons';
 
 import { showCurrency } from '../../../utils/format';
+
+const PaperOffer = styled.div`
+  border: 1px solid black;
+  border-radius: 15px;
+  margin-top: 15px;
+  padding: 15px;
+  flex-grow: 1;
+  cursor: pointer;
+`;
+
+const OfferTitle = styled.h4`
+  padding: 0;
+  margin: 0;
+  margin-bottom: 5px;
+`;
+
+const DiscountBadge = styled.span`
+  background-color: orange;
+  color: white;
+  border-radius: 10px;
+  margin: 10px;
+  padding: 0 10px;
+`;
+
+const OfferInstallments = styled.div`
+  color: orange;
+  margin-top: 5px;
+`;
 
 const CardOffer = ({
   formik,
@@ -24,39 +52,54 @@ const CardOffer = ({
     ? offer.finalPrice / formik.values.installments
     : null;
   return (
-    <Paper
+    <PaperOffer
       onClick={() => checkOffer(offer)}
     >
-      <h5>
-        {offer.title}
-        {' '}
-        |
-        {' '}
-        {offer.description}
-      </h5>
-      <div>
-        {offer.couponApplied ? (
-          <>
-            <p>{`De ${showCurrency(offer.fullPrice)} | Por ${showCurrency(offer.finalPrice)}`}</p>
-            <span>{`-${offer.discountPercentage * 100}%`}</span>
-          </>
-        ) : (
-          <p>{showCurrency(offer.finalPrice)}</p>
-        )}
-      </div>
-      {Boolean(offer.splittable) && (
-        <div>
-          {formik.values.installments ? (
-            `${formik.values.installments}x de ${showCurrency(currentMonthPrice)}/mês`
-          ) : (
-            `Em até ${offer.installments}x de ${showCurrency(minimumMonthPrice)}/mês`
+      <Grid container justify="space-between" alignItems="center">
+        <Grid item>
+          <OfferTitle>
+            {offer.title}
+            {' '}
+            |
+            {' '}
+            {offer.description}
+          </OfferTitle>
+          <div>
+            {offer.couponApplied ? (
+              <>
+                <span>{`De ${showCurrency(offer.fullPrice)} | Por ${showCurrency(offer.finalPrice)}`}</span>
+                <DiscountBadge>{`-${offer.discountPercentage * 100}%`}</DiscountBadge>
+              </>
+            ) : (
+              <span>{showCurrency(offer.finalPrice)}</span>
+            )}
+          </div>
+          {Boolean(offer.splittable) && (
+            <OfferInstallments>
+              {formik.values.installments ? (
+                `${formik.values.installments}x de ${showCurrency(currentMonthPrice)}/mês`
+              ) : (
+                `Em até ${offer.installments}x de ${showCurrency(minimumMonthPrice)}/mês`
+              )}
+            </OfferInstallments>
           )}
-        </div>
-      )}
-      <FormControlLabel
-        control={<Checkbox icon={<RadioButtonUnchecked />} checkedIcon={<Adjust />} checked={offer.id === formik.values.offer.id} />}
-      />
-    </Paper>
+        </Grid>
+        <Grid item>
+          <FormControlLabel
+            control={(
+              <Checkbox
+                icon={<RadioButtonUnchecked />}
+                checkedIcon={<Adjust />}
+                checked={offer.id === formik.values.offer.id}
+                style={{
+                  color: 'black',
+                }}
+              />
+            )}
+          />
+        </Grid>
+      </Grid>
+    </PaperOffer>
   );
 };
 

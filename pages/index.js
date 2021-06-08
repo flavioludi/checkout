@@ -45,6 +45,7 @@ const Home = ({
         {
           ...offer,
           couponApplied: false,
+          finalPrice: offer.fullPrice,
         }
       ));
     }
@@ -68,30 +69,36 @@ const Home = ({
   };
 
   const validationSchema = Yup.object().shape({
-    // offer: {}p
-    //   .number('This must be a number')
-    //   .required('This field is required'),
+    offer: Yup.object().shape({
+      id: Yup
+        .string('This must be a number')
+        .required('This field is required'),
+    }),
     creditCardNumber: Yup
-      .number('This must be a number')
-      .required('This field is required'),
+      .string()
+      .required('This field is required')
+      .test('len', 'This field is incomplete', (val) => val?.replace(/\D/g, '').length === 16),
     creditCardExpirationDate: Yup
       .string()
-      .required('This field is required'),
+      .required('This field is required')
+      .test('len', 'This field is incomplete', (val) => val?.replace(/\D/g, '').length === 4),
     creditCardCVV: Yup
-      .number('This must be a number')
+      .string('This must be a number')
+      .required('This field is required')
+      .test('len', 'This field is incomplete', (val) => val?.replace(/\D/g, '').length === 3),
+    creditCardHolder: Yup
+      .string()
       .required('This field is required'),
-    // creditCardHolder: Yup
-    //   .string()
-    //   .required('This field is required'),
-    // creditCardCPF: Yup
-    //   .number('This must be a number')
-    //   .required('This field is required'),
-    // couponCode: Yup
-    //   .string()
-    //   .required('This field is required'),
-    // installments: Yup
-    //   .number('This must be a number')
-    //   .required('This field is required'),
+    creditCardCPF: Yup
+      .string()
+      .required('This field is required')
+      .test('len', 'This field is incomplete', (val) => val?.replace(/\D/g, '').length === 11),
+    installments: Yup
+      .number('This must be a number')
+      .when('offer', {
+        is: ((offer) => offer.splittable),
+        then: Yup.number().required('This field is required'),
+      }),
   });
 
   const mountPayload = (values) => (
@@ -113,6 +120,7 @@ const Home = ({
   const onSubmit = async (values) => {
     const payload = mountPayload(values);
     const resp = await axios.post('https://private-0ced4-pebmeddesafiofrontend.apiary-mock.com/subscription', payload);
+    const offer = offers.find((_offer) => _offer.id === formik.values.offer.id);
     if (resp.status === 200) {
       router.push({
         pathname: '/success',
@@ -120,7 +128,7 @@ const Home = ({
           data: JSON.stringify({
             offerTitle: formik.values.offer.title,
             offerDescription: formik.values.offer.description,
-            finalPrice: formik.values.offer.finalPrice,
+            finalPrice: offer.finalPrice,
             installments: formik.values.installments,
             monthPrice: formik.values.offer.monthPrice,
             userCPF: formik.values.creditCardCPF,
@@ -140,7 +148,7 @@ const Home = ({
   return (
     <MainLayout>
       <Container fixed>
-        <Grid container spacing={3}>
+        <Grid container spacing={8}>
           <Grid item xs={12} md={6}>
             <CheckoutSection
               formik={formik}

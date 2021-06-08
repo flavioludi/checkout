@@ -1,15 +1,15 @@
-import { React } from 'react';
 import {
   Grid,
-  Button,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
+  FormHelperText,
 } from '@material-ui/core';
 
 import InputText from '../../inputs/InputText';
 import MaskInputText from '../../inputs/MaskInputText';
+import SimpleButton from '../../buttons/SimpleButton';
 
 const CheckoutSection = ({
   formik,
@@ -23,6 +23,7 @@ const CheckoutSection = ({
     <Grid container>
       <Grid item xs={12}>
         <h2>Estamos quase lá</h2>
+        <h4>Insira seus dados de pagamento abaixo:</h4>
       </Grid>
       <Grid item xs={12}>
         <form onSubmit={formik.handleSubmit}>
@@ -100,7 +101,12 @@ const CheckoutSection = ({
               <Grid container spacing={8}>
                 <Grid item xs={12}>
                   <FormControl style={{ width: '100%' }}>
-                    <InputLabel id="installments-label">Parcelas</InputLabel>
+                    <InputLabel
+                      id="installments-label"
+                      shrink
+                    >
+                      Parcelas
+                    </InputLabel>
                     <Select
                       fullWidth
                       labelId="installments-label"
@@ -113,15 +119,18 @@ const CheckoutSection = ({
                         <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>
                       ))}
                     </Select>
+                    {formik.touched.installments && formik.errors.installments && (
+                      <FormHelperText error>{formik.errors.installments}</FormHelperText>
+                    )}
                   </FormControl>
                 </Grid>
               </Grid>
             )}
             <Grid container spacing={8}>
               <Grid item xs={12}>
-                <Button color="primary" variant="contained" fullWidth type="submit">
+                <SimpleButton color="primary" variant="contained" fullWidth type="submit">
                   Finalizar pagamento
-                </Button>
+                </SimpleButton>
               </Grid>
             </Grid>
           </div>

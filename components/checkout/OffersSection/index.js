@@ -1,5 +1,6 @@
 import {
   Grid,
+  FormHelperText,
 } from '@material-ui/core';
 
 import CardOffer from './CardOffer';
@@ -11,9 +12,14 @@ const OffersSection = ({
   checkCoupon,
 }) => {
   const checkOffer = (offer) => {
-    formik.setFieldValue('offer', offer)
+    formik.setFieldValue('offer', offer);
+    if (offer.splittable) {
+      formik.setFieldValue('installments', '');
+    } else {
+      formik.setFieldValue('installments', 1);
+    }
     checkCoupon(offer);
-  }
+  };
   return (
     <Grid>
       <Grid item xs={12}>
@@ -25,12 +31,18 @@ const OffersSection = ({
           <CardOffer
             formik={formik}
             offer={offer}
+            key={offer.id}
             checkOffer={checkOffer}
           />
         ))}
       </Grid>
+      {Boolean(formik.touched.offer && formik.errors.offer?.id) && (
+        <Grid item xs={12}>
+          <FormHelperText error>{formik.errors.offer?.id}</FormHelperText>
+        </Grid>
+      )}
     </Grid>
-  )
+  );
 };
 
 export default OffersSection;

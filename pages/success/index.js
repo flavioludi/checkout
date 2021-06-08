@@ -6,12 +6,14 @@ import {
   Box,
   Grid,
   Paper,
-  Button,
-  Link,
 } from '@material-ui/core';
+import {
+  Star,
+} from '@material-ui/icons';
 
 import MainLayout from '../../layouts/MainLayout';
 import DivGrow from '../../components/grids/DivGrow';
+import SimpleButton from '../../components/buttons/SimpleButton';
 
 import { showCurrency } from '../../utils/format';
 
@@ -23,6 +25,14 @@ const SpanRight = styled.span`
   text-align: right;
 `;
 
+const PlanBox = styled.div`
+  text-align: 'center';
+`;
+
+const ContentButtons = styled.div`
+  margin-top: 30px;
+`;
+
 const Success = () => {
   const router = useRouter();
   const data = JSON.parse(router.query.data);
@@ -30,20 +40,20 @@ const Success = () => {
   return (
     <MainLayout>
       <Container fixed maxWidth="xs">
-        <Box textAlign="center">
+        <Box textAlign="center" m={8}>
           <div>
-            <h3>Parabéns</h3>
-            <h5>Sua assinatura foi realizada com sucesso</h5>
+            <h2>Parabéns</h2>
+            <h3>Sua assinatura foi realizada com sucesso</h3>
           </div>
         </Box>
-        <Box textAlign="center">
-          <Paper>
-            <Box p={4}>
+        <PlanBox>
+          <Paper m={5}>
+            <Box p={2}>
               <DivGrow>
                 <Box m={4}>
                   <Grid container>
                     <Grid item xs={3} style={{ textAlign: 'left' }}>
-                      estrela
+                      <Star />
                     </Grid>
                     <Grid item xs={9} style={{ textAlign: 'right' }}>
                       {data.offerTitle}
@@ -93,13 +103,15 @@ const Success = () => {
               </DivGrow>
             </Box>
           </Paper>
-          <Button color="primary" fullWidth onClick={() => router.push('/')}>
-            Gerenciar assinatura
-          </Button>
-          <Button color="primary" variant="contained" fullWidth onClick={() => router.push('/')}>
-            IR PARA A HOME
-          </Button>
-        </Box>
+          <ContentButtons>
+            <SimpleButton color="primary" fullWidth onClick={() => router.push('/')}>
+              Gerenciar assinatura
+            </SimpleButton>
+            <SimpleButton color="primary" variant="contained" fullWidth onClick={() => router.push('/')}>
+              IR PARA A HOME
+            </SimpleButton>
+          </ContentButtons>
+        </PlanBox>
       </Container>
     </MainLayout>
   );
