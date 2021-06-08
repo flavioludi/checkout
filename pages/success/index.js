@@ -35,7 +35,10 @@ const ContentButtons = styled.div`
 
 const Success = () => {
   const router = useRouter();
-  const data = JSON.parse(router.query.data);
+  let data = {};
+  if (router.query.data) {
+    data = JSON.parse(router.query.data);
+  }
   const monthPrice = data.installments ? data.finalPrice / data.installments : null;
   return (
     <MainLayout>
